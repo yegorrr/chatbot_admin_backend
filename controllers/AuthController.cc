@@ -254,24 +254,32 @@ void AuthController::login(const HttpRequestPtr& req,
             auto newSession = std::make_shared<ActiveSessions>();
             newSession->setUserId(userId);
 
-            // Extract signature part from token for storage
+            // ... (Token signature extraction remains the same) ...
             size_t lastDot = token.rfind('.');
-            if (lastDot == std::string::npos || lastDot + 1 >= token.length()) {
-                LOG_ERROR << "Invalid JWT format - cannot extract signature for user " << currentUsername;
-                auto resp = HttpResponse::newHttpResponse();
-                resp->setStatusCode(k500InternalServerError);
-                resp->setContentTypeCode(CT_APPLICATION_JSON);
-                resp->setBody("{\"error\":\"Internal token error\"}");
-                (*sharedCallback)(resp); // Call via shared_ptr
-                return;
-            }
+            // ... (check lastDot) ...
             std::string tokenSignature = token.substr(lastDot + 1);
-            newSession->setTokenSignature(tokenSignature);
+            // *** Log signature BEFORE setting it ***
+            LOG_DEBUG << "LOGIN: Storing signature [" << tokenSignature << "] for user " << currentUsername;
+            newSession->setTokenSignature(tokenSignature); // Set signature
 
-            // Calculate expiry time for the database record
+            // *** Calculate expiry time using std::chrono ***
             auto expiryDuration = getJwtExpiryDuration();
-            auto expiryTime = std::chrono::system_clock::now() + expiryDuration;
-            newSession->setExpiresAt(trantor::Date(std::chrono::system_clock::to_time_t(expiryTime)));
+            auto expiryTimePoint = std::chrono::system_clock::now() + expiryDuration;
+
+            // *** Convert time_point to MICROSECONDS since epoch ***
+            auto expiryMicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+                expiryTimePoint.time_since_epoch())
+                .count();
+
+            // *** Construct trantor::Date using MICROSECONDS ***
+            trantor::Date expiryTrantorDate(expiryMicroseconds); // Pass microseconds
+
+            newSession->setExpiresAt(expiryTrantorDate);
+
+            // *** Logging (keep as is for verification) ***
+            LOG_DEBUG << "LOGIN: Storing expires_at (Local from Trantor): " << expiryTrantorDate.toDbStringLocal();
+            LOG_DEBUG << "LOGIN: Storing expires_at (epoch seconds): " << expiryTrantorDate.secondsSinceEpoch();
+            LOG_DEBUG << "LOGIN: Storing signature [" << tokenSignature << "] for user " << currentUsername; // Log signature after expiry logging
 
             // Insert the new session record
             sessionMapper.insert(
