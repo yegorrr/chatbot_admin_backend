@@ -1,0 +1,63 @@
+{
+    "listeners": [
+        {
+            "address": "0.0.0.0",
+            "port": 8080, // Or your preferred port
+            "https": false
+        }
+    ],
+    "app": {
+        "number_of_threads": 0, // Use 0 for number of CPU cores
+        "log_path": "./logs",
+        "log_level": "DEBUG",
+        "run_as_daemon": false,
+        "document_root": "./public", // Optional: if serving static files
+        "upload_path": "uploads",
+        "enable_session": false, // Important: Use JWT, not Drogon sessions
+        "session_timeout": 0
+
+    },
+    "db_clients": [
+        {
+            //name: Name of the client,'default' by default
+            "name": "pg_client",
+            //rdbms: Server type, postgresql,mysql or sqlite3, "postgresql" by default
+            "rdbms": "postgresql",
+            //filename: Sqlite3 db file name
+            //"filename":"",
+            //host: Server address,localhost by default
+            "host": "127.0.0.1",
+            //port: Server port, 5432 by default
+            "port": 5432,
+            //dbname: Database name
+            "dbname": "chatbot_db",
+            //user: 'postgres' by default
+            "user": "chatbot_admin",
+            //passwd: '' by default
+            "passwd": "my_password",
+            //is_fast: false by default, if it is true, the client is faster but user can't call
+            //any synchronous interface of it.
+            "is_fast": false,
+            //client_encoding: The character set used by the client. it is empty string by default which 
+            //means use the default character set.
+            //"client_encoding": "",
+            //number_of_connections: 1 by default, if the 'is_fast' is true, the number is the number of  
+            //connections per IO thread, otherwise it is the total number of all connections.  
+            "number_of_connections": 1,
+            //timeout: -1.0 by default, in seconds, the timeout for executing a SQL query.
+            //zero or negative value means no timeout.
+            "timeout": -1.0,
+            //"auto_batch": this feature is only available for the PostgreSQL driver(version >= 14.0), see
+            // the wiki for more details.
+            "auto_batch": false
+        }
+    ],
+    "plugins": [], // Add plugin configurations here if needed later
+    "custom_config": {
+        "jwt": {
+            "secret_key": "!!!REPLACE_WITH_A_VERY_LONG_AND_SECURE_RANDOM_STRING!!!", // *** REPLACE ***
+            "expires_after": 3600 // Token validity in seconds (1 hour)
+        }
+        // Add other custom settings here if needed
+    }
+    }

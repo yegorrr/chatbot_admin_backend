@@ -1,0 +1,10 @@
+{
+    "rdbms": "postgresql",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dbname": "chatbot_db",
+    "user": "chatbot_admin",
+    "passwd": "my_password", // <-- *** REPLACE THIS ***
+    "filename": "", // Keep empty for PostgreSQL
+    "character_set": "utf8" // Optional but good practice
+}
