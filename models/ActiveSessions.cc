@@ -11,7 +11,7 @@
 
 using namespace drogon;
 using namespace drogon::orm;
-using namespace drogon_model::chatbot_db;
+using namespace drogon_model::chatbot;
 
 const std::string ActiveSessions::Cols::_id = "\"id\"";
 const std::string ActiveSessions::Cols::_user_id = "\"user_id\"";

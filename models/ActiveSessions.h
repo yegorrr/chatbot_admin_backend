@@ -36,7 +36,7 @@ using DbClientPtr = std::shared_ptr<DbClient>;
 }
 namespace drogon_model
 {
-namespace chatbot_db
+namespace chatbot
 {
 
 class ActiveSessions
@@ -274,5 +274,5 @@ class ActiveSessions
         return sql;
     }
 };
-} // namespace chatbot_db
+} // namespace chatbot
 } // namespace drogon_model
